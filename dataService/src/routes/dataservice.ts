@@ -51,6 +51,23 @@ router.get('/data', validateAccessToken.validateAccessToken, async (req: Request
     }
 });
 
+//Get one record
+router.get('/data/:appName', validateAccessToken.validateAccessToken, async (req: Request, res: Response) => {
+    try {
+        const { appName } = req.params;
+        const data = await dataDb.getDataByName(appName);
+        if (data) {
+            res.json(data);
+        } else {
+            res.status(404).json({ error: 'Record not found' });
+        }
+    } catch (error) {
+        console.log('Error retrieving data:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
 // Create new data
 router.post('/data', validateAccessToken.validateAccessToken, async (req: Request, res: Response) => {
     try {

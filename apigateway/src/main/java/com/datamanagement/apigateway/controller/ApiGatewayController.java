@@ -1,8 +1,6 @@
 package com.datamanagement.apigateway.controller;
 
 import com.datamanagement.apigateway.constant.Constant;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
@@ -11,75 +9,97 @@ import org.springframework.web.client.*;
 
 import java.util.Enumeration;
 
-@RequiredArgsConstructor
 @Controller
 public class ApiGatewayController {
 
     private final RestTemplate restTemplate;
+    private final Environment env;
 
-    private Environment env;
-
-
-    // Forward GET request
-    @RequestMapping(value = "/api/resource/{id}", method = RequestMethod.GET)
-    @ResponseBody
-    public ResponseEntity<?> getResource(@PathVariable("id") String id) {
-        String nodeJsBackendUrl = env.getProperty(Constant.NODE_BACKEND_HOST) + "/api/resource/" + id;
-        ResponseEntity<String> response = restTemplate.getForEntity(nodeJsBackendUrl, String.class);
-        return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+    public ApiGatewayController(RestTemplate restTemplate, Environment env) {
+        this.restTemplate = restTemplate;
+        this.env = env;
     }
 
-    @RequestMapping(value = "/api/**", method = { RequestMethod.GET })
+    @RequestMapping(value = "/api/data", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<?> forwardRequest(HttpServletRequest request, @RequestBody(required = false) String body) {
-        String nodeJsBackendUrl = env.getProperty(Constant.NODE_BACKEND_HOST) + request.getRequestURI();
-        HttpMethod httpMethod = HttpMethod.resolve(request.getMethod());
-
-        HttpHeaders headers = new HttpHeaders();
-        Enumeration<String> headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            String headerValue = request.getHeader(headerName);
-            headers.add(headerName, headerValue);
+    public ResponseEntity<?> getResource(@RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            String nodeJsBackendUrl = env.getProperty(Constant.DATA_SERVICE_BACKEND_HOST) + ":" + env.getProperty(Constant.DATA_SERVICE_BACKEND_PORT) + "/dataservice/data";
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", authorizationHeader);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<?> entity = new HttpEntity<>(headers);
+            ResponseEntity<String> response = restTemplate.exchange(nodeJsBackendUrl, HttpMethod.GET, entity, String.class);
+            HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+            return ResponseEntity.status(response.getStatusCode())
+                    .headers(responseHeaders)
+                    .body(response.getBody());
+        } catch (HttpClientErrorException e) {
+            HttpStatus statusCode = (HttpStatus) e.getStatusCode();
+            return ResponseEntity.status(statusCode).body("{\"error\": \"" + statusCode.getReasonPhrase() + "\"}");
+        } catch (ResourceAccessException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Error connecting to the backend service\"}");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"An unexpected error occurred\"}");
         }
-
-        HttpEntity<String> entity = new HttpEntity<>(body, headers);
-        ResponseEntity<String> response = restTemplate.exchange(nodeJsBackendUrl, httpMethod, entity, String.class);
-        return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
     }
 
-
-    /*
-    // Forward POST request
-    @RequestMapping(value = "/api/resource", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/data/{appName}", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<?> createResource(@RequestBody String request) {
-        String nodeJsBackendUrl = "http://nodejs-backend-server:3000/api/resource";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> entity = new HttpEntity<>(request, headers);
-        ResponseEntity<String> response = restTemplate.exchange(nodeJsBackendUrl, HttpMethod.POST, entity, String.class);
-        return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+    public ResponseEntity<?> getSingleRecord(@PathVariable String appName, @RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            String nodeJsBackendUrl = env.getProperty(Constant.DATA_SERVICE_BACKEND_HOST) + ":" + env.getProperty(Constant.DATA_SERVICE_BACKEND_PORT) + "/dataservice/data/" + appName;
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", authorizationHeader);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<?> entity = new HttpEntity<>(headers);
+            ResponseEntity<String> response = restTemplate.exchange(nodeJsBackendUrl, HttpMethod.GET, entity, String.class);
+            HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                return ResponseEntity.status(HttpStatus.OK).headers(responseHeaders).body(response.getBody());
+            } else if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\": \"Record not found\"}");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Internal server error\"}");
+            }
+        } catch (HttpClientErrorException e) {
+            HttpStatus statusCode = (HttpStatus) e.getStatusCode();
+            if (statusCode == HttpStatus.NOT_FOUND) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\": \"Record not found\"}");
+            } else {
+                return ResponseEntity.status(statusCode).body("{\"error\": \"" + statusCode.getReasonPhrase() + "\"}");
+            }
+        } catch (ResourceAccessException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Error connecting to the backend service\"}");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"An unexpected error occurred\"}");
+        }
     }
 
-    // Forward PUT request
-    @RequestMapping(value = "/api/resource/{id}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/api/token", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<?> updateResource(@PathVariable("id") String id, @RequestBody String request) {
-        String nodeJsBackendUrl = "http://nodejs-backend-server:3000/api/resource/" + id;
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> entity = new HttpEntity<>(request, headers);
-        ResponseEntity<String> response = restTemplate.exchange(nodeJsBackendUrl, HttpMethod.PUT, entity, String.class);
-        return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+    public ResponseEntity<?> getAccessToken(@RequestBody String request) {
+        try {
+            String tokenServiceBackendUrl = env.getProperty(Constant.TOKEN_SERVICE_BACKEND_HOST) + ":" + env.getProperty(Constant.TOKEN_SERVICE_BACKEND_PORT) + "/token/client-token";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> entity = new HttpEntity<>(request, headers);
+            ResponseEntity<String> response = restTemplate.exchange(tokenServiceBackendUrl, HttpMethod.POST, entity, String.class);
+            HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+            return ResponseEntity.status(response.getStatusCode())
+                    .headers(responseHeaders)
+                    .body(response.getBody());
+        } catch (HttpClientErrorException e) {
+            HttpStatus statusCode = (HttpStatus) e.getStatusCode();
+            return ResponseEntity.status(statusCode).body("{\"error\": \"" + statusCode.getReasonPhrase() + "\"}");
+        } catch (ResourceAccessException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Error connecting to the backend service\"}");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"An unexpected error occurred\"}");
+        }
     }
 
-    // Forward DELETE request
-    @RequestMapping(value = "/api/resource/{id}", method = RequestMethod.DELETE)
-    @ResponseBody
-    public ResponseEntity<?> deleteResource(@PathVariable("id") String id) {
-        String nodeJsBackendUrl = "http://nodejs-backend-server:3000/api/resource/" + id;
-        ResponseEntity<String> response = restTemplate.exchange(nodeJsBackendUrl, HttpMethod.DELETE, null, String.class);
-        return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
-    }*/
 }
