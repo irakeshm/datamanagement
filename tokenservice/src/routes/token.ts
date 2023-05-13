@@ -7,12 +7,9 @@ import { randomBytes } from 'crypto';
 import bcrypt from 'bcrypt';
 import { clients } from '../config/clients';
 
-const clientId = process.env.CLIENT_ID;
-const clientSecret = process.env.CLIENT_SECRET;
-
 const router = express.Router();
-
 const secretKey = randomBytes(32).toString('hex');
+
 
 router.post('/auth-code', validateAuthCodeInput, (req: Request, res: Response) => {
     const { username, password } = req.body;
@@ -76,12 +73,10 @@ router.post('/client-token', (req: Request, res: Response) => {
 
 router.get('/validate', (req: Request, res: Response) => {
     const accessToken = req.header('Authorization');
-
     try {
         if (!accessToken) {
             return res.status(401).json({ error: 'Access token not provided' });
         }
-
         const token = accessToken.split('Bearer ')[1];
         jwt.verify(token, secretKey);
         res.json({ valid: true });
