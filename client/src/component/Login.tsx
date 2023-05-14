@@ -18,11 +18,8 @@ function Login({ setIsLoggedIn }: Props) {
         axios
             .post("http://localhost:3002/dataservice/login", { username, password })
             .then((response) => {
-                // Store access token in local storage
                 localStorage.setItem("accessToken", response.data.accessToken);
-                // Set the login status in the App component
                 setIsLoggedIn(true);
-                // Redirect to home page
                 navigate("/home");
             })
             .catch((error) => {
