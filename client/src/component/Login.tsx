@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import "./Login.css";
 
 interface Props {
     setIsLoggedIn: (isLoggedIn: boolean) => void;
@@ -30,36 +31,35 @@ function Login({ setIsLoggedIn }: Props) {
     };
 
     return (
-        <Form onSubmit={handleSubmit}>
-            <Form.Group controlId="formBasicEmail">
-                <Form.Label>Username</Form.Label>
+        <div className="login-container">
+            <Form className="login-form" onSubmit={handleSubmit}>
+                <div className="login-form-header">
+                    <h2 className="login-form-title">Login</h2>
+                    <p className="login-form-subtitle">Please enter your credentials</p>
+                </div>
+
                 <Form.Control
+                    className="login-form-input"
                     type="text"
-                    placeholder="Enter username"
+                    placeholder="Username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                 />
-            </Form.Group>
 
-            <Form.Group controlId="formBasicPassword">
-                <Form.Label>Password</Form.Label>
                 <Form.Control
+                    className="login-form-input"
                     type="password"
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
-            </Form.Group>
 
-            <Button variant="primary" type="submit">
-                Login
-            </Button>
-        </Form>
+                <Button className="login-form-button" variant="contained" type="submit">
+                    Login
+                </Button>
+            </Form>
+        </div>
     );
 }
 
 export default Login;
-
-
-//http://localhost:3002/dataservice/data
-//let accessToken = localStorage.getItem("accessToken");

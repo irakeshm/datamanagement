@@ -52,7 +52,7 @@
     "appData": {
       "appPath": "/appSix",
       "appOwner": "ownerOne",
-      "isValid": true
+      "isValid": false
     }
   }
 ]

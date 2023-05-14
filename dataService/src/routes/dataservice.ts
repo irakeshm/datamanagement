@@ -6,6 +6,7 @@ import config from '../config/config';
 import { client } from '../config/client';
 import validateAccessToken from '../middleware/authentication'
 import dataDb from '../db/dataDB';
+import App from '../db/Idata';
 
 
 // Access the API host and port from the configuration
@@ -72,7 +73,35 @@ router.get('/data/:appName', validateAccessToken.validateAccessToken, async (req
 router.post('/data', validateAccessToken.validateAccessToken, async (req: Request, res: Response) => {
     try {
         const { appName, appData } = req.body;
-        const newData = { appName, appData };
+
+        // Check if appName already exists
+        const existingData = await dataDb.getDataByName(appName);
+        if (existingData) {
+            return res.status(409).json({ error: 'Duplicate appName' });
+        }
+
+        // Validate request body fields
+        if (!appName || !appData || !appData.appPath || !appData.appOwner || appData.isValid === undefined) {
+            return res.status(400).json({ error: 'Invalid request body' });
+        }
+
+        if (
+            !appName ||
+            !appData ||
+            typeof appName !== 'string' ||
+            typeof appData !== 'object' ||
+            typeof appData.appPath !== 'string' ||
+            typeof appData.appOwner !== 'string' ||
+            typeof appData.isValid !== 'boolean'
+        ) {
+            return res.status(400).json({ error: 'Invalid request body' });
+        }
+
+        const newData: App = {
+            appName,
+            appData,
+        };
+
         const createdData = await dataDb.createData(newData);
         res.json(createdData);
     } catch (error) {
@@ -80,6 +109,7 @@ router.post('/data', validateAccessToken.validateAccessToken, async (req: Reques
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
 
 // Update existing data
 router.put('/data/:appName', validateAccessToken.validateAccessToken, async (req: Request, res: Response) => {
@@ -89,6 +119,17 @@ router.put('/data/:appName', validateAccessToken.validateAccessToken, async (req
         const existingData = await dataDb.getDataByName(appName);
 
         if (existingData) {
+            // Validate request body fields
+            if (
+                !appData ||
+                typeof appData !== 'object' ||
+                typeof appData.appPath !== 'string' ||
+                typeof appData.appOwner !== 'string' ||
+                typeof appData.isValid !== 'boolean'
+            ) {
+                return res.status(400).json({ error: 'Invalid request body' });
+            }
+
             existingData.appData = appData;
             const updatedData = await dataDb.updateData(existingData);
             if (updatedData) {
@@ -104,6 +145,7 @@ router.put('/data/:appName', validateAccessToken.validateAccessToken, async (req
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
 
 // Delete data
 router.delete('/data/:appName', validateAccessToken.validateAccessToken, async (req: Request, res: Response) => {
