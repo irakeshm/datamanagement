@@ -48,8 +48,7 @@ APIGateway is a Java Spring Boot-based API gateway service that acts as an inter
 
 
 ### System Architecture
-
-![Alt text] (https://whimsical.com/SbEW6e2KYWb6c5yZRSK3gg)
+![Alt text](https://whimsical.com/SbEW6e2KYWb6c5yZRSK3gg)
 
 ## Getting Started
 
