@@ -4,7 +4,7 @@
     "appData": {
       "appPath": "/appSix",
       "appOwner": "ownerOne",
-      "isValid": false
+      "isValid": true
     }
   },
   {
@@ -64,26 +64,18 @@
     }
   },
   {
-    "appName": "appNine",
+    "appName": "Test",
     "appData": {
-      "appPath": "/path",
-      "appOwner": "rmishra",
+      "appPath": "Test",
+      "appOwner": "Test",
       "isValid": true
     }
   },
   {
-    "appName": "Appten",
+    "appName": "ss",
     "appData": {
-      "appPath": "/path",
-      "appOwner": "rmishra",
-      "isValid": false
-    }
-  },
-  {
-    "appName": "appEleven",
-    "appData": {
-      "appPath": "/path",
-      "appOwner": "Owner",
+      "appPath": "ss",
+      "appOwner": "ss",
       "isValid": false
     }
   }

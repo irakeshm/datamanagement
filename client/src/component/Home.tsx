@@ -2,22 +2,20 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
-import './Home.css'
+import './Home.css';
+import config from "../config/config";
+import IData from "../config/Idata";
+import { Constants } from '../config/const'
 
-interface IData {
-    appName: string;
-    appData: {
-        appPath: string;
-        appOwner: string;
-        isValid: boolean;
-    };
-}
+
 
 interface Props {
     isLoggedIn: boolean;
 }
 
-let accessToken = localStorage.getItem("accessToken");
+const dataServiceHost = config.dataServiceHost;
+const dataServicePort = config.dataServicePort;
+let accessToken = localStorage.getItem(Constants.ACCESS_TOKEN);
 
 function Home({ isLoggedIn }: Props) {
     const [dataList, setDataList] = useState<IData[]>([]);
@@ -33,6 +31,11 @@ function Home({ isLoggedIn }: Props) {
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
+    const [error, setError] = useState('');
+    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isFormValid, setIsFormValid] = useState(false);
+
 
     useEffect(() => {
         if (!isLoggedIn) {
@@ -42,9 +45,23 @@ function Home({ isLoggedIn }: Props) {
         fetchData();
     }, [isLoggedIn, navigate]);
 
+    useEffect(() => {
+        // Check if all fields are filled
+        setIsFormValid(
+            updatedAppName.trim() !== "" &&
+            updatedAppPath.trim() !== "" &&
+            updatedAppOwner.trim() !== ""
+        );
+    }, [updatedAppName, updatedAppPath, updatedAppOwner]);
+
     const fetchData = () => {
+        fetchDataAndUpdate();
+    };
+
+    const fetchDataAndUpdate = () => {
+        setIsLoading(true);
         axios
-            .get<IData[]>("http://localhost:3002/dataservice/data", {
+            .get<IData[]>(dataServiceHost + ":" + dataServicePort + "/dataservice/data", {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
@@ -54,8 +71,12 @@ function Home({ isLoggedIn }: Props) {
             })
             .catch((error) => {
                 console.error(error);
+            })
+            .finally(() => {
+                setIsLoading(false);
             });
     };
+
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
         const keyword = event.target.value.toLowerCase();
@@ -85,7 +106,7 @@ function Home({ isLoggedIn }: Props) {
             setUpdatedAppPath(dataEntry.appData.appPath);
             setUpdatedAppOwner(dataEntry.appData.appOwner);
             setUpdatedIsValid(dataEntry.appData.isValid);
-            setIsEditMode(true); // Set isEditMode to true
+            setIsEditMode(true);
             setShowModal(true);
         }
     };
@@ -93,7 +114,7 @@ function Home({ isLoggedIn }: Props) {
     const handleDelete = (appName: string) => {
         if (window.confirm(`Are you sure you want to delete ${appName}?`)) {
             axios
-                .delete(`http://localhost:3002/dataservice/data/${appName}`, {
+                .delete(dataServiceHost + ":" + dataServicePort + `/dataservice/data/${appName}`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                     },
@@ -108,63 +129,73 @@ function Home({ isLoggedIn }: Props) {
         }
     };
 
-
     const handleModalSubmit = () => {
-        if (isEditMode) {
-            // Update existing entry
-            axios
-                .put(
-                    `http://localhost:3002/dataservice/data/${updatedAppName}`,
-                    {
-                        appName: updatedAppName,
-                        appData: {
-                            appPath: updatedAppPath,
-                            appOwner: updatedAppOwner,
-                            isValid: updatedIsValid,
-                        },
-                    },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`,
-                        },
-                    }
-                )
-                .then((response) => {
-                    console.log("Update successful:", response.data);
-                    setShowModal(false);
-                    fetchData();
-                })
-                .catch((error) => {
-                    console.error("Update error:", error);
-                });
+        const trimmedAppName = updatedAppName.trim();
+
+        if (trimmedAppName === '') {
+            setError('App Name is required.');
+        } else if (trimmedAppName.includes(' ')) {
+            setError('App Name cannot contain spaces.');
         } else {
-            // Add new entry
-            axios
-                .post(
-                    "http://localhost:3002/dataservice/data",
-                    {
-                        appName: updatedAppName,
-                        appData: {
-                            appPath: updatedAppPath,
-                            appOwner: updatedAppOwner,
-                            isValid: updatedIsValid,
+            if (isEditMode) {
+                axios
+                    .put(
+                        dataServiceHost + ":" + dataServicePort + `/dataservice/data/${updatedAppName}`,
+                        {
+                            appName: updatedAppName,
+                            appData: {
+                                appPath: updatedAppPath,
+                                appOwner: updatedAppOwner,
+                                isValid: updatedIsValid,
+                            },
                         },
-                    },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`,
+                            },
+                        }
+                    )
+                    .then((response) => {
+                        console.log("Update successful:", response.data);
+                        setShowModal(false);
+                        fetchData();
+                    })
+                    .catch((error) => {
+                        console.error("Update error:", error);
+                    });
+            } else {
+                axios
+                    .post(
+                        dataServiceHost + ":" + dataServicePort + "/dataservice/data",
+                        {
+                            appName: updatedAppName,
+                            appData: {
+                                appPath: updatedAppPath,
+                                appOwner: updatedAppOwner,
+                                isValid: updatedIsValid,
+                            },
                         },
-                    }
-                )
-                .then((response) => {
-                    console.log("Add new successful:", response.data);
-                    setShowModal(false);
-                    fetchData();
-                })
-                .catch((error) => {
-                    console.error("Add new error:", error);
-                });
+                        {
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`,
+                            },
+                        }
+                    )
+                    .then((response) => {
+                        console.log("Add new successful:", response.data);
+                        setShowModal(false);
+                        fetchData();
+                    })
+                    .catch((error) => {
+                        console.error("Add new error:", error);
+                    });
+            }
+            setError('');
         }
+        setShowSuccessMessage(true);
+        setTimeout(() => {
+            setShowSuccessMessage(false);
+        }, 5000);
     };
     const handleAddNew = () => {
         setShowModal(true);
@@ -174,7 +205,9 @@ function Home({ isLoggedIn }: Props) {
         setUpdatedAppOwner("");
         setUpdatedIsValid(false);
     };
+
     const handleCloseModal = () => {
+        setError('');
         setShowModal(false);
     };
 
@@ -198,7 +231,14 @@ function Home({ isLoggedIn }: Props) {
                     />
                 </div>
                 <button className="add-new-button" onClick={handleAddNew}>Add New</button>
+                <button className="add-new-button" onClick={fetchDataAndUpdate}>Refresh</button>
+
             </div>
+            {showSuccessMessage && (
+                <div className="success-message">
+                    {isEditMode ? "Update Opertion Successful" : "Add Record Opertion Successful"}
+                </div>
+            )}
             <table className="data-table">
                 <thead>
                     <tr>
@@ -241,7 +281,7 @@ function Home({ isLoggedIn }: Props) {
             <Modal show={showModal} onHide={handleCloseModal}>
                 <div className="modal-container">
                     <div className="modal-content">
-                        <Modal.Header >
+                        <Modal.Header>
                             <Modal.Title className="modal-title">
                                 {isEditMode ? "Update App Data" : "Add New App"}
                             </Modal.Title>
@@ -256,6 +296,7 @@ function Home({ isLoggedIn }: Props) {
                                             value={updatedAppName}
                                             onChange={(e) => setUpdatedAppName(e.target.value)}
                                             disabled={isEditMode}
+                                            required
                                         />
                                     </div>
                                 )}
@@ -265,6 +306,8 @@ function Home({ isLoggedIn }: Props) {
                                         type="text"
                                         value={updatedAppPath}
                                         onChange={(e) => setUpdatedAppPath(e.target.value)}
+                                        disabled={isEditMode}
+                                        required
                                     />
                                 </div>
                                 <div className="form-group">
@@ -273,14 +316,17 @@ function Home({ isLoggedIn }: Props) {
                                         type="text"
                                         value={updatedAppOwner}
                                         onChange={(e) => setUpdatedAppOwner(e.target.value)}
+                                        required
                                     />
                                 </div>
                                 <div className="form-group">
                                     <label>Is Valid</label>
-                                    <input className="checkbox"
+                                    <input
+                                        className="checkbox"
                                         type="checkbox"
                                         checked={updatedIsValid}
                                         onChange={(e) => setUpdatedIsValid(e.target.checked)}
+                                        required
                                     />
                                 </div>
                             </form>
@@ -290,17 +336,14 @@ function Home({ isLoggedIn }: Props) {
                             <Button variant="secondary" onClick={handleCloseModal}>
                                 Close
                             </Button>
-                            <Button variant="primary" onClick={handleModalSubmit}>
+                            <Button variant="primary" onClick={handleModalSubmit} disabled={!isFormValid}>
                                 {isEditMode ? "Update" : "Save"}
                             </Button>
                         </Modal.Footer>
                     </div>
                 </div>
             </Modal>
-
         </div>
     );
-
 }
-
 export default Home;
