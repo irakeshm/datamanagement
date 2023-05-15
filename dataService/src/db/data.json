@@ -4,7 +4,7 @@
     "appData": {
       "appPath": "/appSix",
       "appOwner": "ownerOne",
-      "isValid": true
+      "isValid": false
     }
   },
   {
@@ -45,6 +45,46 @@
       "appPath": "/appSix",
       "appOwner": "ownerOne",
       "isValid": true
+    }
+  },
+  {
+    "appName": "appSeven",
+    "appData": {
+      "appPath": "/path",
+      "appOwner": "rakesh",
+      "isValid": false
+    }
+  },
+  {
+    "appName": "appSevenxx",
+    "appData": {
+      "appPath": "/path",
+      "appOwner": "rakesh",
+      "isValid": true
+    }
+  },
+  {
+    "appName": "appNine",
+    "appData": {
+      "appPath": "/path",
+      "appOwner": "rmishra",
+      "isValid": true
+    }
+  },
+  {
+    "appName": "Appten",
+    "appData": {
+      "appPath": "/path",
+      "appOwner": "rmishra",
+      "isValid": false
+    }
+  },
+  {
+    "appName": "appEleven",
+    "appData": {
+      "appPath": "/path",
+      "appOwner": "Owner",
+      "isValid": false
     }
   }
 ]

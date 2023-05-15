@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { randomBytes } from 'crypto';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import config from '../config/config';
 import { client } from '../config/client';
 import validateAccessToken from '../middleware/authentication'
@@ -37,9 +37,26 @@ router.post('/login', async (req: Request, res: Response) => {
         res.json({ accessToken });
     } catch (error) {
         console.log('Error during login:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        if (axios.isAxiosError(error)) {
+            const axiosError = error as AxiosError;
+            if (axiosError.response) {
+                const statusCode = axiosError.response.status;
+                if (statusCode === 401) {
+                    res.status(401).json({ error: 'Invalid Credentials' });
+                } else if (statusCode === 404) {
+                    res.status(404).json({ error: 'Not Found' });
+                } else {
+                    res.status(500).json({ error: 'Internal Server Error' });
+                }
+            } else {
+                res.status(500).json({ error: 'Internal Server Error' });
+            }
+        } else {
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
     }
 });
+
 
 // Get all data
 router.get('/data', validateAccessToken.validateAccessToken, async (req: Request, res: Response) => {
