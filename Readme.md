@@ -48,8 +48,14 @@ APIGateway is a Java Spring Boot-based API gateway service that acts as an inter
 
 
 ### System Architecture
-![Alt text](HLD.png)
-![Alt text](LLD.png)
+![Alt text](./Screenshot/HLD.png)
+![Alt text](./Screenshot/LLD.png)
+
+### Web Application UI 
+![Alt text](./Screenshot/Login_Page.png)
+![Alt text](./Screenshot/Home_Page.png)
+![Alt text](./Screenshot/Add_New_Record.png)
+![Alt text](./Screenshot/Update_Record.png)
 
 
 ## Getting Started
@@ -86,3 +92,14 @@ To run the project locally, follow these steps:
 2. Build the project: `mvn clean install`.
 3. Start the APIGateway service by running: `java -jar target/apigateway.jar`.
 4. The APIGateway service will start running on `http://localhost:8080`.
+
+### Secrets
+
+1.  Web Application Credetials:
+    User Name = adminUser
+    Password = adminpass"
+
+2. Test Client ID and Client Secret:
+    { id: 'frontendapp', secret: 'abd9aafce586d9a12c9fd61569e5955a' }
+    { id: 'apigateway', secret: 'fb0cde6228b21d89ec222b45efec54e7' }
+

@@ -46,7 +46,6 @@ function Home({ isLoggedIn }: Props) {
     }, [isLoggedIn, navigate]);
 
     useEffect(() => {
-        // Check if all fields are filled
         setIsFormValid(
             updatedAppName.trim() !== "" &&
             updatedAppPath.trim() !== "" &&

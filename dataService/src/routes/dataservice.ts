@@ -8,8 +8,6 @@ import validateAccessToken from '../middleware/authentication'
 import dataDb from '../db/dataDB';
 import App from '../db/Idata';
 
-
-// Access the API host and port from the configuration
 const tokenServiceHost = config.tokenServiceHost;
 const tokenServicePort = config.tokenServicePort;
 
@@ -24,10 +22,8 @@ const secretKey = randomBytes(32).toString('hex');
 router.post('/login', async (req: Request, res: Response) => {
     try {
         const { username, password } = req.body;
-        // Call token service to generate auth code
         const authCodeResponse = await axios.post(tokenServiceHost + ':' + tokenServicePort + '/token/auth-code', { username, password });
         const { authCode } = authCodeResponse.data;
-        // Call token service to generate access token
         const accessTokenResponse = await axios.post(tokenServiceHost + ':' + tokenServicePort + '/token/access-token', {
             authCode,
             clientId: client.CLIENT[0].id,
@@ -91,7 +87,6 @@ router.post('/data', validateAccessToken.validateAccessToken, async (req: Reques
     try {
         const { appName, appData } = req.body;
 
-        // Check if appName already exists
         const existingData = await dataDb.getDataByName(appName);
         if (existingData) {
             return res.status(409).json({ error: 'Duplicate appName' });

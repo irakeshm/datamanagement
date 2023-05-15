@@ -10,7 +10,9 @@ import { clients } from '../config/clients';
 const router = express.Router();
 const secretKey = randomBytes(32).toString('hex');
 
-
+/**
+ * This endpoint is to create auth code for the user, from provided Username and password
+ */
 router.post('/auth-code', validateAuthCodeInput, (req: Request, res: Response) => {
     const { username, password } = req.body;
 
@@ -28,6 +30,9 @@ router.post('/auth-code', validateAuthCodeInput, (req: Request, res: Response) =
     }
 });
 
+/**
+ * This endpoint is to create Access code for the user, from provided auth code, Client ID and secret
+ */
 router.post('/access-token', (req: Request, res: Response) => {
     const { authCode, clientId, clientSecret } = req.body;
     if (!authCode || !clientId || !clientSecret) {
@@ -55,6 +60,9 @@ router.post('/access-token', (req: Request, res: Response) => {
     }
 });
 
+/**
+ * This endpoint is to create access code for the Client, from provided client ID and secret
+ */
 router.post('/client-token', (req: Request, res: Response) => {
     try {
         const { clientId, clientSecret } = req.body;
@@ -71,6 +79,9 @@ router.post('/client-token', (req: Request, res: Response) => {
 
 });
 
+/**
+ * This endpoint is to Validate the access token provided
+ */
 router.get('/validate', (req: Request, res: Response) => {
     const accessToken = req.header('Authorization');
     try {
