@@ -46,6 +46,11 @@ APIGateway is a Java Spring Boot-based API gateway service that acts as an inter
 2. `/api/data`: Calls the DataService with the access token to retrieve all JSON records.
 3. `/api/data/{appName}`: Calls the DataService with the access token to retrieve a specific JSON record based on the provided ID or app name.
 
+
+### System Architecture
+
+![alt text] (https://whimsical.com/SbEW6e2KYWb6c5yZRSK3gg)
+
 ## Getting Started
 
 To run the project locally, follow these steps:
