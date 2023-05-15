@@ -1,4 +1,4 @@
-# Data Management
+# Data Management Application
 
 A comprehensive project integrating TokenService, DataService, Web Application, and APIGateway for efficient data management and secure access.
 
