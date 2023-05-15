@@ -1,0 +1,39 @@
+version: '3'
+services:
+  tokenservice:
+    build:
+      context: ./tokenservice
+      dockerfile: Dockerfile
+    ports:
+      - 3001:3001
+  dataservice:
+    build:
+      context: ./dataService
+      dockerfile: Dockerfile
+    ports:
+      - 3002:3002
+    depends_on:
+      - tokenservice
+    environment:
+      - NODE_ENV=docker
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    depends_on:
+      - dataservice
+    environment:
+      - ENV=docker
+  apigateway:
+    build:
+      context: ./apigateway
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    depends_on:
+      - tokenservice
+      - dataservice
+    environment:
+      - RUNNING_IN_DOCKER=true
