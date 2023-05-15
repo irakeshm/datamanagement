@@ -1,46 +1,49 @@
-# Getting Started with Create React App
+# Web Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The Web Application is a React.js application that interacts with the DataService to provide a user interface for performing CRUD operations on a JSON database. The application allows the team to retrieve data from the JSON database, delete records, and update records.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+The Web Application offers the following features:
 
-### `npm start`
+- Retrieve Data: The application allows users to search and retrieve data from the JSON database based on specific criteria.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- Delete Record: Users can delete any record from the JSON database using the Web Application.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- Update Record: The application provides a user-friendly interface to update the data in the JSON database. Users can edit the fields and save the changes.
 
-### `npm test`
+## Getting Started
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+To run the Web Application locally, follow these steps:
 
-### `npm run build`
+1. Make sure you have [Node.js](https://nodejs.org) installed on your machine.
+2. Clone the repository: `git clone git@github.com:irakeshm/datamanagement.git`.
+3. Navigate to the project directory: `cd client`.
+4. Install the dependencies by running: `npm install`.
+5. Start the development server: `npm start`.
+6. Open the application in your browser at `http://localhost:3000`.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Alternatively:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### <ins>This service is Dockerize so you can just run the Dockerfile.</ins>
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Dependencies
 
-### `npm run eject`
+The Web Application relies on the following dependencies:
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- `react`: A JavaScript library for building user interfaces.
+- `react-dom`: Provides DOM-specific methods for React.
+- `axios`: A promise-based HTTP client for making requests to the DataService API.
+- `react-router-dom`: A routing library for React applications.
+- `typescript`: A superset of JavaScript that adds static typing and other features.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+These dependencies are managed through the `package.json` file and will be installed automatically when running `npm install`.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Usage
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+The Web Application provides an intuitive user interface for interacting with the JSON database. Users can search for specific records, delete records, and update existing records.
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Acknowledgements
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+The Web Application was created by [Your Name](https://github.com/irakeshm/) and the development team. It was built using React.js and serves as a user interface for interacting with the JSON database provided by the DataService.
