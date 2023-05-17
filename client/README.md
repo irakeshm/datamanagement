@@ -46,4 +46,4 @@ The Web Application provides an intuitive user interface for interacting with th
 
 ## Acknowledgements
 
-The Web Application was created by [Your Name](https://github.com/irakeshm/) and the development team. It was built using React.js and serves as a user interface for interacting with the JSON database provided by the DataService.
+The Web Application was created by [Rakesh Mishra](https://github.com/irakeshm/) and the development team. It was built using React.js and serves as a user interface for interacting with the JSON database provided by the DataService.
