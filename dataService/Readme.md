@@ -78,4 +78,4 @@ These dependencies are managed through the `package.json` file, and will be inst
 
 ## Acknowledgements
 
-The DataService project was created by [Your Name](https://github.com/irakeshm/) as a demonstration of Node.js and TypeScript skills. It
+The DataService project was created by [Rakesh Mishra](https://github.com/irakeshm/) as a demonstration of Node.js and TypeScript skills. It
