@@ -69,4 +69,4 @@ These dependencies are managed through the `package.json` file, and will be inst
 
 ## Acknowledgements
 
-The TokenService project was created by [Your Name](https://github.com/irakeshm/) as a demonstration of Node.js and TypeScript skills. It was inspired by the need for a simple token-based authentication service.
+The TokenService project was created by [Rakesh Mishra](https://github.com/irakeshm/) as a demonstration of Node.js and TypeScript skills. It was inspired by the need for a simple token-based authentication service.
