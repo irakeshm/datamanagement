@@ -67,4 +67,4 @@ Once the APIGateway service is up and running, you can make HTTP requests to the
 
 ## Acknowledgements
 
-The APIGateway service was created by [Your Name](https://github.com/irakeshm/) as a component of the architecture to provide a secure and unified interface for accessing the DataService. It leverages Java Spring Boot and integrates with the TokenService to generate access tokens and the DataService to retrieve JSON data.
+The APIGateway service was created by [Rakesh Mishra](https://github.com/irakeshm/) as a component of the architecture to provide a secure and unified interface for accessing the DataService. It leverages Java Spring Boot and integrates with the TokenService to generate access tokens and the DataService to retrieve JSON data.
