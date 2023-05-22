@@ -24,7 +24,7 @@ public class ApiGatewayController {
     @ResponseBody
     public ResponseEntity<?> getResource(@RequestHeader("Authorization") String authorizationHeader) {
         try {
-            String nodeJsBackendUrl = env.getProperty(Constant.DATA_SERVICE_BACKEND_HOST) + ":" + env.getProperty(Constant.DATA_SERVICE_BACKEND_PORT) + "/dataservice/data";
+            String nodeJsBackendUrl = env.getProperty(Constant.DATA_SERVICE_BACKEND_HOST) + ":" + env.getProperty(Constant.DATA_SERVICE_BACKEND_PORT) + "/dataservice/data?isValid=true";
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", authorizationHeader);
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -49,7 +49,7 @@ public class ApiGatewayController {
     @ResponseBody
     public ResponseEntity<?> getSingleRecord(@PathVariable String appName, @RequestHeader("Authorization") String authorizationHeader) {
         try {
-            String nodeJsBackendUrl = env.getProperty(Constant.DATA_SERVICE_BACKEND_HOST) + ":" + env.getProperty(Constant.DATA_SERVICE_BACKEND_PORT) + "/dataservice/data/" + appName;
+            String nodeJsBackendUrl = env.getProperty(Constant.DATA_SERVICE_BACKEND_HOST) + ":" + env.getProperty(Constant.DATA_SERVICE_BACKEND_PORT) + "/dataservice/data/" + appName+"?isValid=true";
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", authorizationHeader);
             headers.setContentType(MediaType.APPLICATION_JSON);

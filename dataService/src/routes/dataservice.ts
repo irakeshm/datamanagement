@@ -55,31 +55,76 @@ router.post('/login', async (req: Request, res: Response) => {
 
 
 // Get all data
+// router.get('/data', validateAccessToken.validateAccessToken, async (req: Request, res: Response) => {
+//     try {
+//         const data = await dataDb.getAllData();
+//         res.json(data);
+//     } catch (error) {
+//         console.log('Error retrieving data:', error);
+//         res.status(500).json({ error: 'Internal server error' });
+//     }
+// });
+
 router.get('/data', validateAccessToken.validateAccessToken, async (req: Request, res: Response) => {
     try {
-        const data = await dataDb.getAllData();
-        res.json(data);
-    } catch (error) {
-        console.log('Error retrieving data:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
+        const { isValid } = req.query;
 
-//Get one record
-router.get('/data/:appName', validateAccessToken.validateAccessToken, async (req: Request, res: Response) => {
-    try {
-        const { appName } = req.params;
-        const data = await dataDb.getDataByName(appName);
-        if (data) {
-            res.json(data);
+        if (isValid === 'true') {
+            const validData = await dataDb.getValidData();
+            res.json(validData);
         } else {
-            res.status(404).json({ error: 'Record not found' });
+            const data = await dataDb.getAllData();
+            res.json(data);
         }
     } catch (error) {
         console.log('Error retrieving data:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+
+//Get one record
+// router.get('/data/:appName', validateAccessToken.validateAccessToken, async (req: Request, res: Response) => {
+//     try {
+//         const { appName } = req.params;
+//         const data = await dataDb.getDataByName(appName);
+//         if (data) {
+//             res.json(data);
+//         } else {
+//             res.status(404).json({ error: 'Record not found' });
+//         }
+//     } catch (error) {
+//         console.log('Error retrieving data:', error);
+//         res.status(500).json({ error: 'Internal server error' });
+//     }
+// });
+
+router.get('/data/:appName', validateAccessToken.validateAccessToken, async (req: Request, res: Response) => {
+    try {
+        const { appName } = req.params;
+        const { isValid } = req.query;
+
+        if (isValid === 'true') {
+            const validData = await dataDb.getValidDataByName(appName);
+            if (validData) {
+                res.json(validData);
+            } else {
+                res.status(404).json({ error: 'Record not found' });
+            }
+        } else {
+            const data = await dataDb.getDataByName(appName);
+            if (data) {
+                res.json(data);
+            } else {
+                res.status(404).json({ error: 'Record not found' });
+            }
+        }
+    } catch (error) {
+        console.log('Error retrieving data:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 
 
 // Create new data
