@@ -33,6 +33,15 @@ class DataDb {
     async getAllData(): Promise<App[]> {
         return this.data;
     }
+    async getValidData(): Promise<App[]> {
+        const validData = this.data.filter((item) => item.appData.isValid);
+        return validData;
+    }
+    async getValidDataByName(appName: string): Promise<App | null> {
+        const app = this.data.find((item) => item.appName === appName && item.appData.isValid);
+        return app || null;
+    }
+
 
     async createData(newData: App): Promise<App> {
         this.data.push(newData);
